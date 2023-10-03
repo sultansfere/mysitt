@@ -1,0 +1,1 @@
+Please download the phpmailer files and activate the vendor method in order to send verification emails to your emails
