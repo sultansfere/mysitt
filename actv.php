@@ -1,4 +1,4 @@
-<center> 
+<center>  
     <?php
  //if the user get the link//
 if(isset($_GET['code'])){
