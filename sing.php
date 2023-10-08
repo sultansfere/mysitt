@@ -41,7 +41,7 @@ $longurl2 =substr_replace ($chackurll2 ,'',34);
  $urlarray =  [$longurl,$longurl2];
 // Condition if equal to  this https://www.google.com/maps/place/  or this https://maps.app.goo.gl/
 if($urlarray[1] == "https://www.google.com/maps/place/" ||$urlarray[0] == "https://maps.app.goo.gl/"){
-    echo $urlarray[1];
+    
    
 
 // it is for check if ther curect url from a map or not //
