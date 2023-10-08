@@ -1,6 +1,6 @@
 <center> 
     <?php
- 
+ //if the user get the link//
 if(isset($_GET['code'])){
  
 
@@ -9,17 +9,20 @@ if(isset($_GET['code'])){
     $password ="";
     $database =  new PDO ("mysql:host=localhost;dbname=mydb;",$username ,$password);
 
-    //select if the user pressed the link //
+    //select if the user pressed the link and If there is a code similar to the code he clicked on//
 $chekcCode = $database->prepare("SELECT code FROM users WHERE code =:code ");
 $chekcCode->bindParam("code",$_GET['code']);
 $chekcCode->execute();
+// If he found it
 if($chekcCode->rowCount()>0){
+    // Update old code to new
     $update = $database->prepare(" UPDATE users SET code = :ncode  , actv=true  WHERE code =:code ");
     $code=md5(date ("h:i:s"));
     $update->bindParam("ncode" , $code);
     $update->bindParam("code" , $_GET ['code']);
 
     $update->execute();
+    //If the operation is completed
     if($update->execute()){
         echo'تم التحقق بنجاح <br>';
         
@@ -36,4 +39,7 @@ if($chekcCode->rowCount()>0){
 }
 
 
-?></center>
+?>
+
+
+</center>
