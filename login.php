@@ -2,6 +2,12 @@
 <center>
     
     <?php 
+
+
+
+
+
+
  //this for db conect//
  $username ="root";
  $password ="";
@@ -11,7 +17,7 @@
          //this for login validation //
 
 
-
+// use preg_match for mor scure//
         $email= "/^[a-zA-Z\d\._]+@[a-zA-Z\d\._]+\.[a-zA-Z\d\.]{2,}+$/";
         $password= '/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{4,20}/';
 
@@ -709,7 +715,7 @@ nav ul li.btn.hide i:before{
                         <div class="social-icons">
                             <!--  If the user has previously registered -->
                             <p> التسجيل كبائع ! <a href="sing.php">signup</a>.</p>
-                            <p>  الصفحة الرئيسيه ! <a href="index.php">home page</a>.</p>
+                            <p>   نسيت كلمة السر ! <a href="update.php"> foget password</a>.</p>
                         </div>
                     </div>
                 </div>
