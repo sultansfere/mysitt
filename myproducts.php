@@ -591,11 +591,11 @@ img {
     font-family: initial;
 }
 
- .imggg {
+  .imggg {
     vertical-align: middle;
     border-style: none;
-    padding-bottom: 15px;
-    width: 35px;
+    width: 30px;
+    margin-bottom: 10px;
 }
 
 
