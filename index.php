@@ -431,11 +431,17 @@ a{
     font-family: initial;
 }
 
- .imggg {
+ .img {
     vertical-align: middle;
     border-style: none;
     padding-bottom: 15px;
     width: 35px;
+}
+.imggg {
+    vertical-align: middle;
+    border-style: none;
+   width: 30px;
+    margin-bottom: 10px;
 }
 
 
