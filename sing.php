@@ -2,6 +2,7 @@
 <?php 
 
   $username ="root";
+
   $password ="";
   $database =  new PDO ("mysql:host=localhost;dbname=mydb;",$username ,$password);
  
@@ -15,37 +16,43 @@ require 'vendor/autoload.php';
 // for submit button//
 if (isset($_POST['submit'])) {
 
+   $name= $_POST['namee'];
+   $email= $_POST['email'];
+   $password= $_POST['password'];
+   $confermpassword= $_POST['confermpassword'];
+   $urll= $_POST['urll'];
+   $sll= $_POST['sll'];
 
 
+// Confirm if there are no empty values/
+      if (empty($name) || empty($email) || empty($urll) || empty($password) || empty($confermpassword)  || empty($sll)) {
+        $msg = "<div class='alert alert-danger'>All fields are required.</div>";
 
+      }else{
 
 $chackurll = $_POST ["urll"];
-//remov any words other "https://maps.app.goo.gl"//
-$dygdix =substr_replace ($chackurll ,'',24);
+$chackurll2 = $_POST ["urll"];
 
+//remov any words other "https://maps.app.goo.gl/"//
+$longurl =substr_replace ($chackurll ,'',24);
+//remov any words other "https://www.google.com/maps/place/"//
+$longurl2 =substr_replace ($chackurll2 ,'',34);
+// Add the two variables into one variable in array form
+ $urlarray =  [$longurl,$longurl2];
+// Condition if equal to  this https://www.google.com/maps/place/  or this https://maps.app.goo.gl/
+if($urlarray[1] == "https://www.google.com/maps/place/" ||$urlarray[0] == "https://maps.app.goo.gl/"){
+    echo $urlarray[1];
+   
 
 // it is for check if ther curect url from a map or not //
-if($dygdix =="https://maps.app.goo.gl/"){
-
-}else{
-
-    $chackur = $_POST ["urll"];
-//remov any words other "https://www.google.com/maps/place""//
-
-    $dhgf =substr_replace ($chackur ,'',34);
-    
-
-    if($dhgf=="https://www.google.com/maps/place/"){
-
-
-
- 
-
-
 
    // filter in the values email password by "preg_match" //
-    $email= "/^[a-zA-Z\d\._]+@[a-zA-Z\d\._]+\.[a-zA-Z\d\.]{2,}+$/";
+    $email= "/^[a-z0-9]+(?!.*(?:\+{2,}|\-{2,}|\.{2,}))(?:[\.+\-]{0,1}[a-z0-9])*@gmail\.com$$/";
     $password= '/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{4,20}/';
+    $confermpassword = '/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{4,20}/';
+    if($_POST['confermpassword'] == $_POST['password']){
+
+   
    
   // Check if the values is filtered or not//
    if(preg_match($email,$_POST['email'])){
@@ -61,22 +68,8 @@ if($dygdix =="https://maps.app.goo.gl/"){
       
 
 
-// Confirm if there are no empty values/
-      if (empty($name) || empty($email) || empty($urll) || empty($password) || empty($confermpassword)  || empty($sll)) {
-        $msg = "<div class='alert alert-danger'>All fields are required.</div>";
 
-    }else {
-        // If something is empty
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $msg = "<div class='alert alert-danger'>Enter a valid email.</div>";
-        }else {
-            if (!filter_var($urll, FILTER_VALIDATE_URL)) {
-                $msg = "<div class='alert alert-danger'>Enter a valid url.</div>";
-            }else {
-                if ($password !== $confermpassword) {
-                    $msg = "<div class='alert alert-danger'>Password and confirm password do not match.</div>";
-                }else {
-                  
+      
                 
            // Check whether the user is already registered or not     
    $chechemail = $database->prepare("SELECT * FROM  users  WHERE email = :email");
@@ -85,12 +78,12 @@ if($dygdix =="https://maps.app.goo.gl/"){
    $chechemail->execute();
     if($chechemail->rowCount()>0){
 
-        
-        $msg = "<div class='alert alert-warning'>تاكد من ادخال البيانات بشكل صحيح.</div>";
+        //maseeg for error if the email exesst
+        $msg = "<div class='alert alert-warning'> هذا الايميل مستخدم من قبل     .</div>";
    }else{
 // If it has not been registered before
-    $adduser = $database->prepare("INSERT INTO  users (namee , email , password , code ,ROLE ,urll , sll) VALUES
-     (:namee , :email  , :password  , :code ,'ADMIN' ,:urll ,:sll)");
+    $adduser = $database->prepare("INSERT INTO  users (namee , email , password , code ,ROLE ,urll , sll , ressetpass) VALUES
+     (:namee , :email  , :password  , :code ,'ADMIN' ,:urll ,:sll ,'npass')");
      $adduser->bindParam("namee" , $name);
      $adduser->bindParam("email" , $email);
      $adduser->bindParam("password" , $password);
@@ -100,10 +93,11 @@ if($dygdix =="https://maps.app.goo.gl/"){
      $adduser->bindParam("code" , $code);
      if($adduser->execute()){
         
-      {
+      
         
       
          $mail = new PHPMailer(true);
+         // start the code for email send
          try {
              //Server settings
              //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
@@ -126,8 +120,8 @@ if($dygdix =="https://maps.app.goo.gl/"){
              $mail->isHTML(true);                                  //Set email format to HTML
              $mail->Subject = 'Here is the subject';
              $mail->Body    = '<h1> </h1>'."<div>رابط التحقق من موقع دلني"."</div>"."<a href
-             ='http://localhost/mysitt/mmm/actv.php?code=".$code."'>
-             "."http://localhost/mysitt/mmm/actv.php?code=".$code."</a>";
+             ='http://localhost/mysitt/actv.php?code=".$code."'>
+             "."http://localhost/mysitt/actv.php?code=".$code."</a>";
              
            ;
              $mail->send();
@@ -137,37 +131,32 @@ if($dygdix =="https://maps.app.goo.gl/"){
          
              
          } catch (Exception $e) {
-             echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
-         }
+             $msg ="Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+         }// end email code
          
          
          
          
-         $msg = "<div class='alert alert-success'>تم تسجيلك بنجاح.فضلا تحقق من الايميل</div>";
-              }
-         
-            }
-         
-            }
-         
-            
-        
-      }
-            }
-        }
-    }
-    }else{
-        $msg = "<div class='alert alert-warning'> نظام كلمة المرور كالتالي (Pp1900) و ان تتعدا اربع قيم .</div>";
-    }
 
-}else{
-    $msg = "<div class='alert alert-warning'>email من ادخال البيانات بشكل صحيح.</div>";
-   }
-    }else{
-        $msg = "<div class='alert alert-warning'> تأكد اذا كان الرابط من قوقل ماب او لا</div>";
-      
-    }
+         $msg = "<div class='alert alert-success'>تم تسجيلك بنجاح.فضلا تحقق من الايميل</div>";
+
+                 }
+
+                 }
+
+               }else{
+            echo "sjgjbns";
+         }
+             }else{
+                $msg = "<div class='alert alert-warning'>   الايميل ليس صالح و يجب ان يكو  gmail .</div>";
+             }
+           }else{
+            $msg = "<div class='alert alert-warning'>    تحقق اذا كان كلمات المرور متطابقه     .</div>";
 }
+         }else{
+            $msg = "<div class='alert alert-warning'>    تحقق اذا كان  الرابط من قوقل ماب     .</div>";
+         }
+       }
 }
   
 
