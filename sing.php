@@ -145,7 +145,7 @@ if($urlarray[1] == "https://www.google.com/maps/place/" ||$urlarray[0] == "https
                  }
 
                }else{
-            echo "sjgjbns";
+                $msg = "<div class='alert alert-warning'>         شكل كلمة المرور لا بد  ان تكون من نوع Dd1800 وتكون فوق اربع قيم  .</div>";
          }
              }else{
                 $msg = "<div class='alert alert-warning'>   الايميل ليس صالح و يجب ان يكو  gmail .</div>";
