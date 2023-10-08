@@ -1,1 +1,5 @@
 Please download the phpmailer files and activate the vendor method in order to send verification emails to your emails
+----------------------
+Create a database in phpmyadmin. The database type is mysql and its name is mydb without a secret number. It consists of two tables, the first table is called ky and the second is users.If you just want to download the database, you will find it next to the files. Download it and put it in phpmyadmin it name <mydb>
+
+
