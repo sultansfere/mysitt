@@ -1,838 +1,730 @@
-<?php
 
- 
-session_start();
-   
+<center>
+    
+    <?php 
+
+
+
+
+
+
  //this for db conect//
-
-$username ="root";
-$password ="";
-$database =  new PDO ("mysql:host=localhost;dbname=mydb;",$username ,$password);
-
-//Call the session that contains evidence about the user if he is registered and also if he is an administrator and place the values ​​in an array //
-
-  $ROLE = array( $_SESSION['ADMIN']);
-  $userrrr = array( $_SESSION['user_id']);
-
-// Converting arrays to text values //
-
-$newLangs = implode($ROLE);
-$fhoode = implode($userrrr);
-
-$chechemail = $database->prepare("SELECT * FROM  users  WHERE ROLE = :ROLE and id =:id");
-
-$chechemail->bindParam("ROLE",$newLangs);
-$chechemail->bindParam("id",$fhoode);
-$chechemail->execute();
- if($chechemail->rowCount()===0){
-
-    header('location:login.php');   
-
-}else{
-    
-}
-
-
-$post_output = null; //Used to display messages to the user
-
- 
-  $uploads=null;
-
-  
-//Verify user is logged in
-if(!isset($_SESSION['user_id']))
-{
-	header('location:login.php');
-}else{
-	$id			= $_SESSION['user_id'];
-	$username	= $_SESSION['namee'];
-      $sl = $_SESSION['sll'];
-    
-    
-    
- 
-}
-
-//Get posts from user
-$sql 	= "SELECT * FROM ky WHERE userr = ? ";
-$stmt 	= $database->prepare($sql);
-$stmt->execute([$id]);
-
-if($stmt->rowCount() == 0)
-{
-	$post_output .= '<p><center> لا يوجد منتجات</center></p>';
-}else{
-	
-	while($rows = $stmt->fetch())
-	{
-        
-		
-		$price 		= $rows['price'];
-        $leftt 		= $rows['leftt'];
-        $file 		= $rows['file'];
-        $order_id 		= $rows['order_id'];
-        
-       
-        
-
-		$file='<img src = "data:image/png;base64,'.base64_encode($file).'" width = "50px" height = "50px"/>';
-		$post_output.="<tr>
-    <td>
-        <div class='main'>
-            <div class=d-flex>
-            $file
-            </div>
-            <div class='des'>
-              
-            </div>
-        </div>
-    </td>
-    <td>
-    <div class='counte'>
-
-<input class='text'type='text' value='$price '>
-
-</div>
-    </td>
-    <td>
-        <div class='counte'>
-            
-            <input class='text'type='text'  value='$leftt '>
-          
-        </div>
-    </td>
-    <td>
-    
-    
-       <form method ='post' action='myproducts.php' > 
-       
-       <button type='submit' value='".$rows['order_id']."'  name ='dleeet' class='btn btn-danger' data-bs-dismiss='modal'><i class='bi bi-x'>
-
-
-<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='currentColor' class='bi bi-x' viewBox='0 0 16 16'>
-<path d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'/>
-</svg>
-
-</i></button></form>
-    </td>
-    
-</tr>";   
-    
+ $username ="root";
+ $password ="";
+ $database =  new PDO ("mysql:host=localhost;dbname=mydb;",$username ,$password);
    
-	
-	}
-
-    
-}
+    if(isset($_POST ['logo'])){
+         //this for login validation //
 
 
-
-if(isset($_POST['dleeet'])){
-
-    $selectitems_dleet=$database->prepare("DELETE FROM ky WHERE order_id = :order_id ");
-    $rmoov_id= $_POST['dleeet'];
-    $selectitems_dleet->bindParam("order_id" , $rmoov_id);
-    
-    if($selectitems_dleet->execute()){
-  $msg = "<div class='alert alert-success'> تم حذف المنتج.</div>";
-
-    }
-}
-?>
+// use preg_match for mor scure//
+        $email= "/^[a-zA-Z\d\._]+@[a-zA-Z\d\._]+\.[a-zA-Z\d\.]{2,}+$/";
+        $password= '/^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9]).{4,20}/';
 
 
 
 
-    
- <?php
+  //this for if it  preg_match good //
   
- 
-  $username ="root";
-  $password ="";
-  $database =  new PDO ("mysql:host=localhost;dbname=mydb;",$username ,$password);
-  
-    
-  if(isset($_SESSION['user_id'])) {
+   if(preg_match($email,$_POST['email'])){
+    if(preg_match($password,$_POST['password'])){
 
-    
-     $username= $_SESSION['namee'];
-     $ry = array($_SESSION['user_id']);
-     $urlll= array( $_SESSION['urll']);
-     $slll = array( $_SESSION['sll']);
      
+    // for the selsct if the user is exist//
+    $login =$database->prepare("SELECT * FROM users WHERE email = :email and password =:password and ROLE =:ROLE ") ;
     
+    $login->bindParam("email",$_POST['email']);
+    $login->bindParam("password",$_POST['password']);
+    $login->bindParam("ROLE",$_POST['ROLE']);
+    $login->execute();
+    if($login->rowCount()===1){
+    
+        $user = $login->fetchObject();
+        if($user->actv === 1){
   
+            // create sission//
+     session_start();
+
+
+     //Set a name for the session//
+     
+        $_SESSION['ADMIN']=$user->ROLE;
+        $_SESSION['user_id']=$user->id;
+        $_SESSION['namee']=$user->namee;
+        $_SESSION['urll']=$user->urll;
+        $_SESSION['sll']=$user->sll;
+       
+
+        
+    
+
+     
       
-     if(isset($_POST['upload'])){
-
-        $userr =strip_tags( $_POST['userr']);
-        $urll =  strip_tags($_POST['urll']);
-        $price = strip_tags( $_POST['price']);
-        $nameee =strip_tags( $_POST['nameee']);
-          $discrbshn =strip_tags( $_POST['discrbshn']);
-          $model =strip_tags( $_POST['model']);
-          $sll =strip_tags( $_POST['sll']);
-          $leftt =strip_tags( $_POST['leftt']);
-        
-    
-    
-          if (empty($userr) || empty($urll) || empty($price) || empty($nameee) || empty($discrbshn)  || empty($sll) || empty($leftt) ) {
-            $msg = "<div class='alert alert-danger'>  تأكد من ادخال البيانات .</div>";
-    
-        }else{
-
-        $userr= $_POST['userr'];
-        $urll= $_POST['urll'];
-        $price= $_POST['price'];
-        $nameee= $_POST['nameee'];
-        $discrbshn= $_POST['discrbshn'];
-        $model = $_POST['model'];
-        $leftt= $_POST['leftt'];
-        $sll= $_POST['sll'];
-        $fileName= $_FILES['file'] ["name"];
-        $fileType= $_FILES['file'] ["type"];
-        $fileData=  file_get_contents( $_FILES['file'] ["tmp_name"]);
-
-
-
+      
        
-
-        
-  $stev=("$nameee$discrbshn$model$leftt"); 
-  
-  $djhhd =str_replace (' ' , '' ,$stev);
-
-
-
-        $chechpro = $database->prepare("SELECT * FROM  ky  WHERE file = :file AND userr = :userr");
+      
     
-        $chechpro->bindParam("file" , $fileData);
-        $chechpro->bindParam("userr" , $userr);
-        $chechpro->execute();
-         if($chechpro->rowCount()>0){
-     
-             
-             $msg = "<div class='alert alert-success'>تم ارسال المنتج  !.</div>";
-             
-        }else{
+        // Go to the sellers' link if the user's account is equipped with the sellers feature//
+       if($user->ROLE==='ADMIN'){
+      header("location:http:/mysitt/myproducts.php",true);
+      
     
-        
-    
-         $addpro = $database->prepare("INSERT INTO  ky ( nameee , discrbshn , model , price , userr ,leftt,file , fileName , fileType , urll , sll , uploads ) VALUES
-         (:nameee,:discrbshn,:model,:price,:userr ,:leftt,:file , :fileName , :fileType ,:urll  ,:sll ,:uploads)");
-         $addpro->bindParam("price" , $price);
-         $addpro->bindParam("nameee" , $nameee);
-         $addpro->bindParam("discrbshn" , $discrbshn);
-         $addpro->bindParam("model" , $model);
-         $addpro->bindParam("leftt" , $leftt);
-         $addpro->bindParam("userr" , $userr);
-         $addpro->bindParam("urll" , $urll);
-         $addpro->bindParam("sll" , $sll);
-         $addpro->bindParam("uploads" , $djhhd);
-         
-         
-         $addpro->bindParam("file" , $fileData);
-         $addpro->bindParam("fileName" , $fileName);
-         $addpro->bindParam("fileType" , $fileData);
-     
-          
-        
+       }else{
+    // If not, make it go to the home page//
 
+   header("location:http:/mysitt/index.php" ,true)  ; 
    
-         if($addpro->execute()){
+   }
+    
+    
+     
+// If not, make it go to the home page//
 
-
-
-         }else{
-         echo 'يوجد خطأ';
-     }
-     }
+}   
+   if($user->ROLE==='USER'){
+    
+  header("location:http:/mysitt/index.php",true);  
+    // If the inputs is wrong//
+    }else{
+    
+        $msg = "<div class='alert alert-warning'> من ادخال البيانات بشكل password.</div>";
     }
+    
+    }else{
+        $msg = "<div class='alert alert-warning'> من ادخال البيانات بشكل email.</div>";
+    }
+    
 
-  
+}else{
+    
+        $msg = "<div class='alert alert-warning'> من ادخال البيانات بشكل password.</div>";
+    
+
 }
-
-
+}else{
+    $msg = "<div class='alert alert-warning'> من ادخال البيانات بشكل email.</div>";
 }
-
-
-
-
+    }   
+    
+    
     ?>
-
-
-
-<!doctype html>
-<html>
-  <head>
-    <title>Dlene</title>
-  
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
    
-    <script src="https://kit.fontawesome.com/332a215f17.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<!DOCTYPE html>
+<html lang="zxx" dir="rtl" >
 
+<head >
 
-    <style>
+    <title>تسجيل دخول</title>
+  
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8" />
+  
 
-.cover{
-    position: relative;
-    z-index: 0;
-    width: 100%;
-    background: #e79702;
-}
-.phone{
-    z-index: 1;
-    font-weight: 200;
-}
-.phone i{
-    color: #000;
-}
-.phone a{
-    color:#000;
-    font-size: 13px;
-    font-weight: bold;
-}
-.reg{
-    width: 50%;
-    text-align:right;
-}
-.reg a{
-    color:#000;
-    text-transform: uppercase;
-    font-size: 13px;
-    font-weight: bold;
-}
-.social-icon{
-    display: inline-block;
-    width: 50%;
-    
-}
-.social-icon p{
-    display:block;
-    width: 100%;
+    <link href="//fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-}
-.social-icon p a{
-    height: 30px;
-    margin-right: 10px;
-}
-.social-icon p a i{
-    font-size: 13px;
-    color: #000;
-}
-.social-icon p a:hover{
-    background: #f8aa02;
-    border-color: #f8aa02;
-}
-.social-icon p a:hover i{ 
-    color:#fff;
-}
-/*==========Navbar=============*/
-.bg-color{
-    background: #0f0f0ffb;
-}
-.navbar-brand{
-    color:#f8aa02;
-    font-weight: bold;
-    font-size: 35px!important;
-}
-.nav-link{
-    font-weight: bold;
-    color: #f8aa02;
-    font-size: 20px;
-}
-.btn-group{
-    color: #f8aa02;
-}
-.navbar-toggler i{
-    color: #f8aa02;
-}
-/*========End of Navbar===========*/
-/*==========Hero Section===========*/
-#hero{
-    display:table;
-    width: 100%;
-    height: 60vh;
-    background: url(./images/hero-2.jpg) top center;
-    background-size: cover;
-}
-@media (min-width: 1024px){
-    #hero{
-        background-attachment: fixed;
-    }
+    <!--/Style-CSS -->
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+    <!--//Style-CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/af562a2a63.js" crossorigin="anonymous"></script>
+ <style>
+
+html {
+    scroll-behavior: smooth;
+ 
+ 
 }
 
-#hero .hero-logo{
-    margin: 20px;
-    max-width: 100%;
-}
-#hero .hero-container{
-    background: rgba(0,0,0,0.2);
-    display: table-cell;
+body,
+html {
     margin: 0;
-    padding:0;
-    text-align: center;
-    vertical-align: middle;
-}
-#hero h1{
-    margin: 30px 0 10px 0;
-    font-weight: bold;
-    line-height: 48px;
-    text-transform: uppercase;
-    color: #fff;
-}
-@media (max-width: 768px){
-    #hero h1{
-        font-size: 28px;
-        line-height: 36px;
-    }
-}
-#hero h2{
-    color: #fff;
-    margin-bottom: 50px;
-    font-style: italic;
-}
-@media (max-width: 768px){
-    #hero h2{
-        font-size: 24px;
-        line-height: 26px;
-        margin-bottom: 30px;
-    }
-    
-}
-#hero .actions a{
-    text-transform: uppercase;
-    font-weight: bold;
-    font-size: 16px;
-    letter-spacing: 1px;
-    display: inline-block;
-    padding: 8px 20px;
-    border-radius: 2px;
-    transition: 0.5s;
-    margin: 10px;
-}
-#hero .btn-get-started{
-    background: #ebe703;
-    border: 2px solid #a85303;
-    color: #fff;
-}
-#hero .btn-get-started:hover{
-    background: none;
-    border: 2px solid #fff;
-    color: #fff;
-    text-decoration: none;
-    font-style: italic;
-}
-.cart .table{
-    margin-bottom: 30px;
-    border-bottom: 1px solid #fff;
-}
-.cart .table thead tr th{
-    border-top:0px;
-    font-size:16px;
-    font-weight: bold;
-    border-bottom:0px;
-}
-.cart .table thead tr td{
-    padding-top:30px;
-    padding-bottom: 30px;
-    vertical-align: middle;
-    align-self: center;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
 }
 
-.cart .table tbody tr td .main .d-flex img{
-    border: 2px solid #000;
-    border-radius: 3px;
+
+
+.d-grid {
+    display: grid;
 }
-.cart .table tbody tr td .main .des{
-    vertical-align: middle;
-    align-self: center;
+
+.d-flex {
+    display: flex;
+    
 }
-.cart .table tbody tr td .main .des p{
-    margin-bottom:0px;
-}
-.cart .table tbody tr td h6{
-    font-size:16px;
-    color:#000;
-    margin-bottom: 0px;
-}
-.cart .table tbody tr td .counter{
-    margin-bottom:0px;
-}
-.counter i{
-    border: 1px solid #000;
-    padding: 7px;
-    display: inline-block;
-    position: relative;
-}
-.cart .table tbody tr td .counter input{
-    width: 100px;
-    padding-left:30px;
-    height: 40px;
-    outline:none;
-    box-shadow: none;
-}
-.checkout ul{
-    border: 2px solid #ebebeb;
-    background: #f3f3f3;
-    padding-left:25px;
-    padding-right:25px;
-    padding-top:16px;
-    padding-bottom: 20px;
-}
-.checkout ul li{
-    list-style: none;
-    font-size:16px;
-    font-weight: bold;
-    color:#252525;
-    text-transform: uppercase;
-    overflow: hidden;
-}
-.checkout ul li.subtotal{
-    font-weight: bold;
-    text-transform: capitalize;
-    border-bottom:1px solid #fff;
-    padding-bottom: 14px;
-}
-.checkout ul li.subtotal span{
-    font-weight: bold;
-}
-.checkout ul li.cart-total{
-    padding-top: 10px
-}
-.checkout ul li.cart-total span{
-    color:#e7ab3c;
-}
-.checkout ul li span{
-    float:right;
-}
-.checkout .proceed-btn{
-    font-size:15px;
-    font-weight: bold;
-    color:#fff;
-    background:#252525;
-    text-transform: uppercase;
-    padding:15px 25px 14px 25px;
-    display: block;
+
+.text-center {
     text-align: center;
 }
-.cart .table tbody tr td .counter input {
-    width: 100px;
-    padding-left: 30px;
-    height: 40px;
-    outline: none;
-    box-shadow: none;
-    margin: 2px;
-}
-input {
-    overflow: visible;
-    width: 65px;
-    border: 0.01px solid;
-    text-align: center;
-}
-.checkout .proceed-btn {
-    font-size: 15px;
-    font-weight: bold;
-    color: #fff;
-    background: #252525;
-    text-transform: uppercase;
-    padding: 15px 25px 14px 25px;
-    display: block;
-    text-align: center;
-    margin: 7px;
-}
-.navbar-nav .nav-link {
-    padding-right: 0;
-    padding-left: 0;
-    color: white;
-}
-img {
-    vertical-align: middle;
-    border-style: none;
-    width: 60px;
-}
-.cart .table tbody tr td .main .d-flex img {
-    border: 0.10px solid;
-    border-radius: 1px;
-}
-.table td, .table th {
-    padding: 0.75rem;
-    vertical-align: top;
-    border-top: 1px solid #dee2e6;
-    background: #edeff1bd;
-}
-.form-control {
-    display: block;
-    width: 100%;
-    height: calc(1.5em + 0.75rem + 2px);
-    padding: 0.375rem 0.75rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+
+.text-left {
     text-align: left;
 }
 
-
-
-
-.navbar-brand {
-    color: #f8aa02;
-    font-weight: bold;
-    font-size: 35px!important;
-    font-family: initial;
+.text-right {
+    text-align: right;
 }
 
- .imggg {
-    vertical-align: middle;
-    border-style: none;
-    padding-bottom: 15px;
-    width: 35px;
+button,
+input,
+select {
+    -webkit-appearance: none;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
 }
 
+button,
+.btn,
+select {
+    cursor: pointer;
+}
 
+a {
+    text-decoration: none;
+}
 
-    </style>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  </head>
-  <body>
+img {
+    max-width: 100%;
+}
 
-       
-              
-        <!--Nav-->
-        <nav class="navbar navbar-expand-lg main-navbar bg-color main-navbar-color"
-        id="main-navbar">
-        <div class="container">
-        <a class="navbar-brand" style="color:white;" href=""><i><img class = "imggg"  width="10px"></i>Dlene</a>
-            <div class="order-lg-last btn-group">
-            <i class="bi bi-geo-alt-fill">
-        
-            </i>
-            </div>
-            <button class="navbar-toggler"  type="button" data-toggle="collapse"
-            data-target="#myNav"  aria-controls="nav" aria-expanded="false"
-            aria-label="Toggle navigation">
-            <i class="fa fa-bars" aria-hidden="true" style="color:white;"></i></button>
-        <div  class="collapse navbar-collapse"id="myNav">
-            <ul  class="navbar-nav ml-auto">
-            <?php
-          
-   
+ul {
+    margin: 0;
+    padding: 0
+}
 
-          $username ="root";
-          $password ="";
-          $database =  new PDO ("mysql:host=localhost;dbname=mydb;",$username ,$password);
-          $ROLE = array( $_SESSION['ADMIN']);
-          $userrrr = array( $_SESSION['user_id']);
-        
-        $newLangs = implode($ROLE);
-        $fhoode = implode($userrrr);
-        
-        $chechemail = $database->prepare("SELECT * FROM  users  WHERE ROLE = :ROLE and id =:id");
-        
-        $chechemail->bindParam("ROLE",$newLangs);
-        $chechemail->bindParam("id",$fhoode);
-        $chechemail->execute();
-         if($chechemail->rowCount()>0){
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+    padding: 0
+}
 
+p {
+    color: #666;
+    font-size: 16px;
+    line-height: 25px;
+    opacity: .6;
+}
 
-            echo' <li class="nav-item">
-            <a href="index.php"class="nav-link">الصفحة الرئيسيه</a>
-        </li>';
-   echo '<li class="nav-item">
-   <a href="logout.php" class="nav-link"> تسجيل خروج </a>';
-       
+.p-relative {
+    position: relative;
+}
+
+.p-absolute {
+    position: absolute;
+}
+
+.p-fixed {
+    position: fixed;
+}
+
+.p-sticky {
+    position: sticky;
+}
+
+.btn,
+button,
+.actionbg,
+input {
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -o-border-radius: 4px;
+    -ms-border-radius: 4px;
+}
+
+.btn:hover,
+button:hover {
+    transition: 0.5s ease;
+    -webkit-transition: 0.5s ease;
+    -o-transition: 0.5s ease;
+    -ms-transition: 0.5s ease;
+    -moz-transition: 0.5s ease;
+}
+
+/*-- wrapper start --*/
+.wrapper {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (min-width: 576px) {
+    .wrapper {
+        max-width: 540px;
+    }
+}
+
+@media (min-width: 768px) {
+    .wrapper {
+        max-width: 720px;
+    }
+}
+
+@media (min-width: 992px) {
+    .wrapper {
+        max-width: 960px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .wrapper {
+        max-width: 1140px;
+    }
+}
+
+.wrapper-full {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/*-- //wrapper start --*/
+
+/*-- form styling --*/
+.w3l-mockup-form {
+    position: relative;
+    min-height: 100vh;
+    z-index: 0;
+    background: #D3D3D3;
+    padding: 40px 40px;
+}
+
+.container {
+    max-width: 890px;
+    margin: 0 auto;
+}
+
+.w3l_form {
+    padding: 0px;
     
-         }
-            ?>
-            </ul>
-        </div>
-        </div>
-        
-        </nav>
-        
-        <!--End of Nav-->
-     
-    <div class="col-lg-4 offset-lg-4">
-                             <div class="checkout">
-           
-                              <a href="#"class="proceed-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop" ><i class="bi bi-plus-circle-fill">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
-</svg>  
-                              </i> اضافة منتج </a>
-                            </div>
-                             </div>
-
-
-<hr>
-
-
-
-
-
-  
-         <form action="myproducts.php" enctype="multipart/form-data" method="post" >               
-               
-               <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                 <div class="modal-dialog">
-                   <div class="modal-content">
-                     <div class="modal-header">
-                       <h5 class="modal-title" id="staticBackdropLabel">معلومات المنتج</h5>
-                       <button type='submit' class='btn ' data-bs-dismiss='modal'><i class='bi bi-x'>
-
-
-<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='currentColor' class='bi bi-x' viewBox='0 0 16 16'>
-<path d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'/>
-</svg>
-
-</i></button>
-                     </div>
-                     <div class="modal-body">
-               
-
-
-                      
-                     
-                <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label"> عنوان المنتج </label>
-                 <input type="text" class="form-control"  name ="nameee" required >
-
-                 
-                 <label for="exampleFormControlInput1" >السعر</label>
-                 <input type="number" class="form-control" min="0"  id="quantity" name="price" required>
-
-               <label for="exampleFormControlInput1" class="form-label">  الموديل </label>
-               <input type="number" class="form-control" name ="model"  step="" value="" />
-
-                 <label for="exampleFormControlInput1">الكميه</label>
-                 <input type="number" class="form-control" min="0"  id="quantity" name="leftt" required>
-                 
-
-                 <label for="exampleFormControlInput1" class="form-label">  صوره للمنتج </label>
-                 <input type="file" class="form-control"  name ="file" eccept="image/*" required >
-
-             <input type="hidden" name="userr" value="<?php echo $ry[0];?>">
-             <input type="hidden" name="urll" value="<?php echo $urlll[0];?>">
-             <input type="hidden" name="sll" value="<?php echo $slll[0];?>">
-             
-
-
-
-
-
-
-
-
-
-
-            
-
-
-             
-               </div>
-               <div class="mb-3">
-                 <label for="exampleFormControlTextarea1" class="form-label">معلومات اضافيه </label>
-                 <textarea class="form-control" name="discrbshn" id="exampleFormControlTextarea1" rows="1"></textarea>
-               </div>
-                     <div class="modal-footer">
-                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                       <button type="submit" name= "upload" class="btn btn-primary">Understood</button>
-               
-                     </div>
-                     </div>
-                   </div>
-                 </div>
-               </div>
-
-
-                 </form>
-                 <div class="container">
-   <?php 
-                   if(isset($msg )){
-                    echo $msg ;
-                   }  
-               
-                   
-                   ?> 
-                   </div>
-    <section class="mt-5">
-        <div class="container">
-            <div class="cart">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col"class="text-white">المنتج</th>
-                            <th scope="col"class="text-white">السعر</th>
-                            <th scope="col"class=" text-whitee">الكميه</th>
-                            <th scope="col"class="text-white" > حذف </th>
-                           
-                        </tr>
-                    </thead>
-                    
-                    <tbody>
-                  
-                   
-                      
-                   <?php 
-                  
-                   if(isset($post_output)){
-                    echo $post_output ;
-
-                   }
-                   
-                   ?> 
-
-
-
-
-
-
-
-
-
-
-                    </tbody>
-                </table>
-            </div>
-            </div>
-        </div>
-    </section>
     
  
+   
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 
+.content-wthree {
+    flex-basis: 60%;
+    -webkit-flex-basis: 60%;
+    box-sizing: border-box;
+    padding: 3em 3.5em;
+    background: #fff;
+    box-shadow: 2px 9px 49px -17px rgba(0, 0, 0, 0.1);
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
 
+.w3l-workinghny-form .logo {
+    text-align: center;
+}
 
-
-
-
-
-
+.w3l-mockup-form .main-mockup {
+    position: relative;
   
-
-    
-
-
+    margin: 40px 0;
+}
 
 
 
+.w3l-mockup-form form {
+    margin-top: 70px;
+    margin-bottom: 80px;
+}
+
+.social-icons {
+    text-align: center;
+}
+
+.w3l-mockup-form h1 {
+    text-align: center;
+    font-size: 40px;
+    font-weight: 500;
+    color: #3b3663;
+}
+
+.w3l-mockup-form h2 {
+    display: inline-block;
+    font-size: 25px;
+    line-height: 35px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #3b3663;
+}
+
+.w3l-mockup-form input {
+    outline: none;
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #999;
+    padding: 14px 20px;
+    width: 100%;
+    display: inline-block;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    background: transparent;
+    border: 1px solid #e5e5e5;
+    transition: 0.3s all ease;
+}
+
+.w3l-mockup-form input:focus {
+    border-color: #00c16e;
+}
+
+.w3l-mockup-form button {
+    font-size: 18px;
+    color: #fff;
+    width: 100%;
+    background: #2a2a2a;
+    border: none;
+    padding: 14px 15px;
+    font-weight: 500;
+    transition: .3s ease;
+    -webkit-transition: .3s ease;
+    -moz-transition: .3s ease;
+    -ms-transition: .3s ease;
+    -o-transition: .3s ease;
+}
+
+.w3l-mockup-form button:hover {
+    background: #4ca356;
+}
+
+.w3l-mockup-form .social-icons ul li {
+    list-style: none;
+    display: inline-block;
+}
+
+.w3l-mockup-form .social-icons ul li a {
+    padding: 8px;
+}
+
+.w3l-mockup-form .social-icons ul li a:hover {
+    opacity: 0.8;
+    transition: 0.5s ease;
+    -webkit-transition: 0.5s ease;
+    -o-transition: 0.5s ease;
+    -ms-transition: 0.5s ease;
+    -moz-transition: 0.5s ease;
+}
+
+.w3l-mockup-form .social-icons ul span.fa {
+    color: #696687;
+    font-size: 18px;
+    opacity: .8;
+}
+
+.w3l-mockup-form .social-icons ul li a.facebook span {
+    color: #3b5998;
+}
+
+.w3l-mockup-form .social-icons ul li a.twitter span {
+    color: #1da1f2;
+}
+
+.w3l-mockup-form .social-icons ul li a.pinterest span {
+    color: #e60023;
+}
 
 
-      
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="js/bootstrap.js"></script>
-  </body>
+.copyright p {
+    text-align: center;
+    font-size: 17px;
+    line-height: 26px;
+    color: #607863;
+    opacity: 1;
+}
+
+p.copy-footer-29 a {
+    color: #517856;
+}
+
+p.copy-footer-29 a:hover {
+    color: #00c16e;
+    transition: 0.5s ease;
+    -webkit-transition: 0.5s ease;
+    -o-transition: 0.5s ease;
+    -ms-transition: 0.5s ease;
+    -moz-transition: 0.5s ease;
+}
+
+.alert {    
+    padding: 1rem;
+    border-radius: 5px;
+    color: white;
+    margin: 1rem 0;
+}
+
+.alert-success {
+    background-color: #42ba96;
+}
+
+.alert-danger {
+    background-color: #fc5555;
+}
+
+.alert-info {
+    background-color: #2E9AFE;
+}
+
+.alert-warning {
+    background-color: #ff9966;
+}
+
+/*-- responsive design --*/
+
+@media (max-width:736px) {
+    .w3l-mockup-form .main-mockup {
+        flex-direction: column;
+    }
+
+    .w3l_form {
+        order: 2;
+       
+        border-radius: 0;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    .content-wthree {
+        order: 1;
+        border-radius: 0;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+}
+
+@media (max-width:568px) {
+    .w3l-mockup-form h1 {
+        font-size: 30px;
+    }
+
+    .w3l-mockup-form .main-mockup {
+        margin: 30px 0;
+    }
+
+    .content-wthree {
+        padding: 2.5em;
+    }
+}
+
+@media (max-width: 415px) {
+    .w3l-mockup-form {
+        padding: 40px 5px;
+    }
+
+}
+
+@media (max-width:384px) {
+    .w3l-mockup-form {
+        padding: 30px 15px;
+    }
+
+    .content-wthree {
+        padding: 2em;
+    }
+
+    .w3l-mockup-form h1 {
+        font-size: 28px;
+    }
+
+    .w3l-mockup-form h2 {
+        font-size: 22px;
+        line-height: 32px;
+    }
+
+    .copyright p {
+        font-size: 16px;
+    }
+}
+
+
+
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700&display=swap');
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Montserrat',sans-serif;
+}
+nav{
+  background: #2a2a2a;
+  padding: 5px 40px;
+}
+nav ul{
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin-left:-20px;
+}
+nav ul li{
+  padding: 15px 0;
+  cursor: pointer;
+}
+nav ul li.items{
+  position: relative;
+  width: auto;
+  margin: 0 16px;
+  text-align: center;
+  order: 3;
+}
+nav ul li.items:after{
+  position: absolute;
+  content: '';
+  left: 0;
+  bottom: 5px;
+  height: 2px;
+  width: 100%;
+  background: #33ffff;
+  opacity: 0;
+  transition: all 0.2s linear;
+}
+nav ul li.items:hover:after{
+  opacity: 1;
+  bottom: 8px;
+}
+nav ul li.logo{
+  flex: 1;
+  color: white;
+  font-size: 23px;
+  font-weight: 600;
+  cursor: default;
+  user-select: none;
+}
+nav ul li a{
+  color: white;
+  font-size: 18px;
+  text-decoration: none;
+  transition: .4s;
+}
+nav ul li:hover a{
+  color: cyan;
+}
+nav ul li i{
+  font-size: 23px;
+}
+nav ul li.btn{
+  display: none;
+}
+nav ul li.btn.hide i:before{
+  content: '\f00d';
+}
+@media all and (max-width: 900px){
+  nav{
+    padding: 5px 30px;
+  }
+  nav ul li.items{
+    width: 100%;
+    display: none;
+  }
+  nav ul li.items.show{
+    display: block;
+  }
+  nav ul li.btn{
+    display: block;
+  }
+  nav ul li.items:hover{
+    border-radius: 5px;
+    box-shadow: inset 0 0 5px #33ffff,
+                inset 0 0 10px #66ffff;
+  }
+  nav ul li.items:hover:after{
+    opacity: 0;
+  }
+}
+
+
+ </style>
+</head>
+
+<body>
+
+ 
+    <section class="w3l-mockup-form">
+        <div class="container">
+            <!-- /form -->
+            <div class="workinghny-form-grid">
+                <div class="main-mockup">
+                    <div class="alert-close">
+
+
+                    <nav>
+
+<ul>
+   <center><li  class="logo" >Dlene</li></center>
+  
+</ul>
+
+</li>
+</nav>
+
+
+
+                     
+                    </div>
+                    <div class="w3l_form align-self" >
+                        <div class="left_grid_info">
+                           
+                        </div>
+                    </div>
+                    <div class="content-wthree" >
+                        <h2> تسجيل</h2>
+                    
+                 
+
+                       <?php 
+                       // If the entry is wrong, we place it above the entry to show the error
+                       
+                       if(isset($msg)){echo $msg;}  
+                       
+                       
+                       ?>
+                        <!-- Calling the message using an array-->
+
+                        <p class="text-danger"><?php if(isset($brjs)){echo $brjs[0];} ?></p> 
+                        <p class="text-danger"><?php if(isset($brjss)){echo $brjss [0];} ?></p> 
+                       <!--  form post method -->
+
+
+                        <form action="login.php" method="post" >
+                           
+                            <input type="email" class="email" name="email" placeholder="الايميل"  >
+                            <input type="password" class="password" name="password" placeholder="كلمة السر" >
+                            <input type="hidden" class="password" name="ROLE" value="ADMIN"; placeholder=" " >
+                          
+                            <!-- button for submit -->
+
+                            <button name="logo" class="btn" type="submit">تسجيل</button>
+                        </form>
+                        <div class="social-icons">
+                            <!--  If the user has previously registered -->
+                            <p> التسجيل كبائع ! <a href="sing.php">signup</a>.</p>
+                            <p>   نسيت كلمة السر ! <a href="update.php"> foget password</a>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+   
+
+
+</body>
+
 </html>
+    
