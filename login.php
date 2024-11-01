@@ -40,7 +40,7 @@
     if($login->rowCount()===1){
     
         $user = $login->fetchObject();
-        if($user->actv === 1){
+        if($user->actv == 1){
   
             // create sission//
      session_start();
